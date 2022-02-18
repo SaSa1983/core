@@ -365,11 +365,12 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
         if temperature is None:
             return None
 
-        if self._current_temperature.scale == 0:
-            # Current Temperature can have a scale of 0 or 1 and is used for rounding mode in app center.
-            # HA doesn't need to round but we will always need to divide the value by 10^1 in case of 0 as scale.
+        if self._current_temperature.scale == 0 and self._current_temperature.step != 1 :
+            # The current temperature can have a scale of 0 or 1 and is used for
+            # rounding, Home Assistant doesn't need to round but we will always
+            # need to divide the value by 10^1 in case of 0 as scale.
             # https://developer.tuya.com/en/docs/iot/shift-temperature-scale-follow-the-setting-of-app-account-center?id=Ka9qo7so58efq#title-7-Round%20values
-            return self._current_temperature.scale_value(temperature) / 10
+            temperature = temperature / 10
 
         return self._current_temperature.scale_value(temperature)
 
